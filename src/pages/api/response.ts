@@ -9,7 +9,7 @@ type Data = {
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
   Airtable.configure({
     endpointUrl: 'https://api.airtable.com',
-    apiKey: `${process.env.API_KEY}`
+    apiKey: `${process.env.AIRTABLE_KEY}`
   });
 
   var base = Airtable.base(`${process.env.DATABASE_ID}`);
@@ -27,7 +27,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
           return ('Model: ' + record.get('Model'));
         });
         res.status(200).json({ models: retreivedRecords });
-        resolve({ bikes: retreivedRecords });
+        resolve({ models: retreivedRecords });
         res.end();
       }
     });

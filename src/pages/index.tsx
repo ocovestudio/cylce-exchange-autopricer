@@ -8,7 +8,7 @@ export default function Home() {
   const [bikes, setBikes] = useState([])
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/response')
+    fetch('/api/response')
     .then(response => response.json())
     .then((data) => setBikes(data.models))
   }, []);
@@ -20,8 +20,8 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main>
-        {bikes.map(bikes => (
-          <p>{bikes}</p>
+        {bikes.map((bikes, i) => (
+          <p key={bikes + i}>{bikes}</p>
         ))}
       </main>
     </>
