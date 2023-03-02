@@ -9,7 +9,7 @@ type Data = {
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
   const { model, condition } = req.query;
 
-  const modelLowerCase = model.toLowerCase();
+  const modelLowerCase = (model as string).toLowerCase();
   
   Airtable.configure({
     endpointUrl: 'https://api.airtable.com',
