@@ -12,20 +12,45 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
     apiKey: `${process.env.AIRTABLE_KEY}`
   });
 
+  const { model, condition }  = req.query;
+
   var base = Airtable.base(`${process.env.DATABASE_ID}`);
 
   return new Promise((resolve, reject) => {
-    base('99 Data').select({
+    base('Pricing Model').select({
       view: 'Pricing Model'
     }).firstPage(function (err, records) {
       if (err) {
-        res.status(401).send(err);
+        res.send(err);
+        console.log(err)
         reject(err);
       }
       if (records) {
-        const retreivedRecords = records.map(function (record) {
-          return ('Model: ' + record.get('Model'));
+        const retreivedRecords = [] as any[];
+
+        records.forEach((record) => {
+            if (!condition) {
+              if ((record.fields.Model as String).includes(model as string)) {
+                retreivedRecords.push(record.get('Model'));
+              }
+            }
         });
+
+        // if user has selected a model and selected a condition, fetch the price
+        records.forEach((record) => {
+          if (condition) {
+            if ((record.fields.Model as String).includes(model as string)) {
+              retreivedRecords.push(record.fields['Buy Cash']);
+            }
+          }
+        });
+
+        if (!retreivedRecords.length) {
+          res.status(200).json({ models: ['Model Not Found']});
+          resolve({ models: ['Model Not Found'] });
+          res.end();
+        }
+
         res.status(200).json({ models: retreivedRecords });
         resolve({ models: retreivedRecords });
         res.end();
