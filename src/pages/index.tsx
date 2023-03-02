@@ -10,6 +10,7 @@ export default function Home() {
   const [selectedModel, setSelectedModel] = useState();
   const [checkbox, setCheckbox] = useState('');
   const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false)
 
   return (
     <>
@@ -19,7 +20,8 @@ export default function Home() {
       </Head>
       <main>
         <div className="container-results">
-          {models?.map((model, i) => {
+          {loading ? <p>Loading...</p> :
+          models?.map((model, i) => {
             return (
               <p 
               key={model + i} 
@@ -37,8 +39,13 @@ export default function Home() {
           })}
         </div>
         {selectedModel ? 
-        <ConditionCheckboxes setModels={setModels} selectedModel={selectedModel} checkbox={checkbox} setCheckbox={setCheckbox} /> :
-        <SearchBar setModels={setModels} setInput={setInput} input={input} />
+          <ConditionCheckboxes 
+          setModels={setModels} 
+          selectedModel={selectedModel} 
+          checkbox={checkbox} 
+          setCheckbox={setCheckbox} 
+          /> :
+          <SearchBar setModels={setModels} setInput={setInput} input={input} setLoading={setLoading} />
         }
       </main>
     </>

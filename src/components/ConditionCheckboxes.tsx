@@ -16,8 +16,7 @@ export default function ConditionCheckboxes({setModels, selectedModel, checkbox,
           method: 'GET'
         })
         .then(response => response.json())
-        .then((data) => setModels(data.models))
-        console.log(selectedModel)
+        .then((data) => {setModels(data.models)})
       }
 
     return (
