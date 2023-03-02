@@ -40,7 +40,15 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
         records.forEach((record) => {
           if (condition) {
             if ((record.fields.Model as String).includes(model as string)) {
-              retreivedRecords.push(record.fields['Buy Cash']);
+              if (condition === 'A') {
+                retreivedRecords.push(record.fields['Buy Cash']);
+              }
+              if (condition === 'B') {
+                retreivedRecords.push((record.fields['Buy Cash'] as number * 0.8));
+              }
+              if (condition === 'C') {
+                retreivedRecords.push((record.fields['Buy Cash'] as number * 0.6));
+              }
             }
           }
         });
