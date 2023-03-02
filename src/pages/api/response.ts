@@ -7,14 +7,16 @@ type Data = {
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+  const { model, condition } = req.query;
+
+  const modelLowerCase = model.toLowerCase();
+  
   Airtable.configure({
     endpointUrl: 'https://api.airtable.com',
     apiKey: `${process.env.AIRTABLE_KEY}`
   });
 
-  const { model, condition }  = req.query;
-
-  var base = Airtable.base(`${process.env.DATABASE_ID}`);
+  const base = Airtable.base(`${process.env.DATABASE_ID}`);
 
   return new Promise((resolve, reject) => {
     base('Pricing Model').select({
@@ -29,32 +31,31 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
         const retreivedRecords = [] as any[];
 
         records.forEach((record) => {
-            if (!condition) {
-              if ((record.fields.Model as String).includes(model as string)) {
-                retreivedRecords.push(record.get('Model'));
-              }
-            }
-        });
+          const recordMatch = (record.fields.Model as String).toLowerCase().includes(modelLowerCase as string)
 
-        // if user has selected a model and selected a condition, fetch the price
-        records.forEach((record) => {
-          if (condition) {
-            if ((record.fields.Model as String).includes(model as string)) {
-              if (condition === 'A') {
-                retreivedRecords.push(record.fields['Buy Cash']);
-              }
-              if (condition === 'B') {
-                retreivedRecords.push((record.fields['Buy Cash'] as number * 0.8));
-              }
-              if (condition === 'C') {
-                retreivedRecords.push((record.fields['Buy Cash'] as number * 0.6));
-              }
+          // if user has selected a model, return all matching records
+          if (!condition) {
+            if (recordMatch) {
+              retreivedRecords.push(record.get('Model'));
+            }
+          }
+
+          // if user has selected a model and selected a condition, return the price
+          if (condition && recordMatch) {
+            if (condition === 'A') {
+              retreivedRecords.push(record.fields['Buy Cash']);
+            }
+            if (condition === 'B') {
+              retreivedRecords.push((record.fields['Buy Cash'] as number * 0.8));
+            }
+            if (condition === 'C') {
+              retreivedRecords.push((record.fields['Buy Cash'] as number * 0.6));
             }
           }
         });
 
         if (!retreivedRecords.length) {
-          res.status(200).json({ models: ['Model Not Found']});
+          res.status(200).json({ models: ['Model Not Found'] });
           resolve({ models: ['Model Not Found'] });
           res.end();
         }

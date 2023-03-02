@@ -7,8 +7,6 @@ type Props = {
 }
 
 export default function SearchBar({setModels, input, setInput}: Props) {
-    const conditions = [['Excellent', 'A'], ['Used', 'B'], ['Broken', 'C']];
-
     function handleSubmit(event: any) {
         event.preventDefault();
         fetch(`/api/response?model=${input}`, {
